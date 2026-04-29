@@ -61,27 +61,30 @@ function update(req, res) {
   res.json(post);
 }
 
+// DESTROY
+ function destroy(req, res) {
+  const id = req.params.id;
 
-function destroy(req, res) {
-  const id = parseInt(req.params.id);
+  const sql = "DELETE FROM posts WHERE id = ?";
 
-  const index = posts.findIndex(post => post.id === id);
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Errore eliminazione"
+      });
+    }
 
-  if (index === -1) {
-    return res.status(404).json({
-      error: "Post non trovato"
-    });
-  }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        error: "Post non trovato"
+      });
+    }
 
-  posts.splice(index, 1);
-
-  console.log(posts);
-
-  res.sendStatus(204);
+    res.sendStatus(204);
+  });
 }
 
-
-
+//EXPORT
 module.exports = {
   index,
   show,
