@@ -43,11 +43,6 @@ function show(req, res) {
 
 
 
-
-
-
-
-
 // UPDATE
 function update(req, res) {
   const id = req.params.id;
