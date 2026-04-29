@@ -1,8 +1,23 @@
-const posts = require("../data/posts");
+const db = require("../db");  (RICHIAMO IL DATABASE)
+
+// INDEX
 
 function index(req, res) {
-  res.json(posts);
+  const sql = "SELECT * FROM posts";
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Errore database"
+      });
+    }
+
+    res.json(results);
+  });
 }
+
+
+
 
 function show(req, res) {
   const id = parseInt(req.params.id);
