@@ -96,6 +96,32 @@ function update(req, res) {
   });
 }
 
+
+// STORE
+function store(req, res) {
+  const { title, content, image, tags } = req.body;
+
+  const sql = `
+    INSERT INTO posts (title, content, image, tags)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  db.query(sql, [title, content, image, tags], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Errore creazione post"
+      });
+    }
+
+    res.status(201).json({
+      message: "Post creato",
+      id: result.insertId
+    });
+  });
+}
+
+
+
 //EXPORT
 module.exports = {
   index,
