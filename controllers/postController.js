@@ -1,4 +1,4 @@
-const db = require("../db");  (RICHIAMO IL DATABASE)
+const db = require("../db");  //(RICHIAMO IL DATABASE)
 
 // INDEX
 
@@ -48,30 +48,38 @@ function show(req, res) {
 
 
 
-
+// UPDATE
 function update(req, res) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
+  const { title, content, image } = req.body;
 
-  const post = posts.find(p => p.id === id);
+  const sql = `
+    UPDATE posts
+    SET title = ?, content = ?, image = ?
+    WHERE id = ?
+  `;
 
-  if (!post) {
-    return res.status(404).json({
-      error: "Post non trovato"
+  db.query(sql, [title, content, image, id], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Errore aggiornamento post"
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        error: "Post non trovato"
+      });
+    }
+
+    res.json({
+      message: "Post aggiornato"
     });
-  }
-
-  if (!req.body) {
-    return res.status(400).json({
-      error: "Body mancante"
-    });
-  }
-
-  post.title = req.body.title || post.title;
-  post.content = req.body.content || post.content;
-  post.tags = req.body.tags || post.tags;
-
-  res.json(post);
+  });
 }
+
+
+
 
 // DESTROY
  function destroy(req, res) {
@@ -99,15 +107,16 @@ function update(req, res) {
 
 // STORE
 function store(req, res) {
-  const { title, content, image, tags } = req.body;
+  const { title, content, image } = req.body;
 
   const sql = `
-    INSERT INTO posts (title, content, image, tags)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO posts (title, content, image)
+    VALUES (?, ?, ?)
   `;
 
-  db.query(sql, [title, content, image, tags], (err, result) => {
+  db.query(sql, [title, content, image], (err, result) => {
     if (err) {
+      console.log(err);
       return res.status(500).json({
         error: "Errore creazione post"
       });
@@ -123,6 +132,7 @@ function store(req, res) {
 
 
 //EXPORT
+
 module.exports = {
   index,
   show,
